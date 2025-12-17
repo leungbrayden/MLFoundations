@@ -72,27 +72,26 @@ def show_image(data):
 
 # %%
 # Load your first cateogry of images
-data_calculator = np.load("calculator.npy").reshape(28,28)
+data_calculator = np.load("deep_learning/calculator.npy")
 
 # %%
 # Now load your second category of images
-data_door = np.load("door.npy").reshape(28,28)
-
+data_door = np.load("deep_learning/door.npy")
 
 # %%
 # Now load your third category of images
-data_microwave = np.load("microwave.npy").reshape(28,28)
+data_microwave = np.load("deep_learning/microwave.npy")
 
 
 # %%
 # Now load your 4th category of images
-data_cooler = np.load("cooler.npy").reshape(28,28)
+data_cooler = np.load("deep_learning/cooler.npy")
 
 
 
 # %%
 # Now load your 5th category of images
-data_spreadsheet = np.load("spreadsheet.npy").reshape(28,28)
+data_spreadsheet = np.load("deep_learning/spreadsheet.npy")
 
 
 # %% [markdown]
@@ -106,6 +105,8 @@ data_spreadsheet = np.load("spreadsheet.npy").reshape(28,28)
 # %%
 # define X by combining all loaded data from above
 X = np.vstack((data_calculator, data_door, data_microwave, data_cooler, data_spreadsheet))
+
+X = X.reshape(-1, 28, 28, 1)
 
 # # %%
 # # verify the X was defined correctly
@@ -147,7 +148,7 @@ X_train, y_train, X_test, y_test = train_test_split(X, y, test_size=0.2, random_
 # %%
 # Define your model with the correct input shape and appropriate layers
 model = tf.keras.Sequential([
-    tf.keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(28,28)),
+    tf.keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(28,28,1)),
     tf.keras.layers.MaxPooling2D((2,2)),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(32, activation='relu'),
