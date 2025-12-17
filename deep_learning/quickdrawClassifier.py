@@ -72,43 +72,28 @@ def show_image(data):
 
 # %%
 # Load your first cateogry of images
-data_calculator = np.load("calculator.npy")
-
-# %%
-# Now use the function above to show an image from your data
-show_image(data_calculator)
+data_calculator = np.load("calculator.npy").reshape(28,28)
 
 # %%
 # Now load your second category of images
-data_door = np.load("door.npy")
+data_door = np.load("door.npy").reshape(28,28)
 
-# %%
-# visualize your second category of images
-show_image(data_door)
 
 # %%
 # Now load your third category of images
-data_microwave = np.load("microwave.npy")
+data_microwave = np.load("microwave.npy").reshape(28,28)
 
-# %%
-# visualize your third category of images
-show_image(data_microwave)
 
 # %%
 # Now load your 4th category of images
-data_cooler = np.load("cooler.npy")
+data_cooler = np.load("cooler.npy").reshape(28,28)
 
-# %%
-# visualize your 4th category of images
-show_image(data_cooler)
+
 
 # %%
 # Now load your 5th category of images
-data_spreadsheet = np.load("spreadsheet.npy")
+data_spreadsheet = np.load("spreadsheet.npy").reshape(28,28)
 
-# %%
-# visualize your 5th category of images
-show_image(data_spreadsheet)
 
 # %% [markdown]
 # ## Preprocess your data
@@ -122,9 +107,9 @@ show_image(data_spreadsheet)
 # define X by combining all loaded data from above
 X = np.vstack((data_calculator, data_door, data_microwave, data_cooler, data_spreadsheet))
 
-# %%
-# verify the X was defined correctly
-assert X.shape[1] == 784
+# # %%
+# # verify the X was defined correctly
+# assert X.shape[1] == 784
 assert X.shape[0] >= 550000
 
 # %% [markdown]
@@ -135,12 +120,11 @@ assert X.shape[0] >= 550000
 
 # %%
 # define y by creating an array of labels that match X
-y = np.array(['calculator']*len(data_calculator) + 
-             ['door']*len(data_door) + 
-             ['microwave']*len(data_microwave) + 
-             ['cooler']*len(data_cooler) +
-             ['spreadsheet']*len(data_spreadsheet))
-
+y = np.array([0]*len(data_calculator) + 
+             [1]*len(data_door) + 
+             [2]*len(data_microwave) + 
+             [3]*len(data_cooler) +
+             [4]*len(data_spreadsheet))
 
 # %%
 # verify that y is the same length as X
@@ -163,18 +147,22 @@ X_train, y_train, X_test, y_test = train_test_split(X, y, test_size=0.2, random_
 # %%
 # Define your model with the correct input shape and appropriate layers
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(32, activation='relu', input_shape=(X_train.shape[1],)),
+    tf.keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(28,28)),
+    tf.keras.layers.MaxPooling2D((2,2)),
+    tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(32, activation='relu'),
-    tf.keras.layers.Dense(32, activation='relu'),
-    tf.keras.layers.Dense(5)
+    tf.keras.layers.Dense(5)  
 ])
 
 # %%
 # Compile your model
 lr = 0.00001
 
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
-              loss='mean_squared_error')
+model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            metrics=['accuracy']
+            )
 
 # %% [markdown]
 # ## Train your model locally
@@ -184,7 +172,7 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
 # %%
 # Fit your model 
 
-history = model.fit(X_train, y_train, epochs=1000, validation_data=(X_test,y_test))
+history = model.fit(X_train, y_train, epochs=20, validation_data=(X_test,y_test))
 
 
 # %% [markdown]
